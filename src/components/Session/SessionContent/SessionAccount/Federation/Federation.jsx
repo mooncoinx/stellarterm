@@ -1,6 +1,7 @@
 import React from 'react';
 import images from '../../../../../images';
 import FederationInpit from './FederationInput/FederationInput';
+import CopyButton from '../../../../CopyButton';
 
 export default class Federation extends React.Component {
     constructor(props) {
@@ -10,7 +11,84 @@ export default class Federation extends React.Component {
             isEnabled: false,
             isEditing: false,
             addressInUse: true,
+            address: 'syllik',
         };
+    }
+
+    getContent() {
+        const { isEditing, isEnabled, address } = this.state;
+
+        const userWantToEditAddress = address !== '' ? address : '';
+
+        let left;
+        if (!isEditing && !isEnabled) {
+            left = (
+                <React.Fragment>
+                    <p className="no_federation_text">StellarTerm federation address</p>
+                </React.Fragment>
+            );
+        } else if (isEditing) {
+            left = (
+                <React.Fragment>
+                    <p className="federation_text">New federation address</p>
+                    <FederationInpit address={userWantToEditAddress} />
+                </React.Fragment>
+            );
+        } else if (isEnabled && !isEditing) {
+            left = (
+                <React.Fragment>
+                    <p className="federation_text">Your StellarTerm federation address</p>
+                    <strong className="Federation_address" onClick={() => this.handleEdit()}>
+                        syllik*stellarterm.com
+                    </strong>
+                </React.Fragment>
+            );
+        }
+
+        let right;
+        if (isEditing) {
+            right = (
+                <React.Fragment>
+                    <button className="Federation_button_transparent" onClick={() => this.handleEdit()}>
+                        Cancel
+                    </button>
+                    <button className="s-button Federations_button" onClick={() => this.handleSave()}>
+                        Save
+                    </button>
+                </React.Fragment>
+            );
+        } else if (!isEditing && !isEnabled) {
+            right = (
+                <button className="s-button Federations_button" onClick={() => this.handleEdit()}>
+                    Enable
+                </button>
+            );
+        } else if (!isEditing && isEnabled) {
+            right = (
+                <React.Fragment>
+                    <div className="CopyButton" onClick={() => this.handleEdit()}>
+                        <img src={images['icon-edit']} alt="edit" width="24" height="24" />
+                        <span>EDIT</span>
+                    </div>
+                    <CopyButton text={address} />
+                </React.Fragment>
+            );
+        }
+
+        return (
+            <React.Fragment>
+                <div className="Federations_left"> {left}</div>
+                <div className="Federations_right">{right}</div>
+            </React.Fragment>
+        );
+    }
+
+    handleEdit() {
+        this.setState({ isEditing: !this.state.isEditing });
+    }
+
+    handleSave() {
+        this.setState({ isEnabled: true, isEditing: false });
     }
 
     checkForAddress() {
@@ -30,73 +108,13 @@ export default class Federation extends React.Component {
         return null;
     }
 
-    handleEdit() {
-        this.setState({ isEditing: !this.state.isEditing });
-    }
-
-    handleSave() {
-        this.setState({ isEnabled: true });
-    }
-
     render() {
-        const { isEditing, isEnabled } = this.state;
         const addressIsBusy = this.checkForAddress();
+        const content = this.getContent();
 
         return (
             <div className="Federations_block">
-                <div className="s-alert s-alert--primary Federations_alert">
-                    {isEditing ? (
-                        <React.Fragment>
-                            <p className="Sesssion__yourId__title">New federation address</p>
-                            <FederationInpit />
-                        </React.Fragment>
-                    ) : (
-                        <div className="Federations_left">StellarTerm federation address</div>
-                    )}
-
-                    {isEnabled ? (
-                        <React.Fragment>
-                            <p className="Sesssion__yourId__title">Your StellarTerm federation address</p>
-                            <strong className="Sesssion__yourId__accountId">
-                                alexey.s@razortheory.com*stellarterm.com
-                            </strong>
-                        </React.Fragment>
-                    ) : null}
-
-                    <div className="Federations_right">
-                        {isEditing ? (
-                            <React.Fragment>
-                                <button
-                                    className="s-button Federation_button_transparent"
-                                    onClick={() => this.handleEdit()}>
-                                    Cancel
-                                </button>
-                                <button className="s-button Federations_button" onClick={() => this.handleSave()}>
-                                    Save
-                                </button>
-                            </React.Fragment>
-                        ) : (
-                            <button className="s-button Federations_button" onClick={() => this.handleEdit()}>
-                                Enable
-                            </button>
-                        )}
-
-                        {isEnabled ? (
-                            <React.Fragment>
-                                <button className="s-button Federation_button_transparent">
-                                    {' '}
-                                    <img src={images['icon-edit']} className="Federation_icon" alt="Error" />
-                                    Edit
-                                </button>
-                                <button className="s-button Federations_button">
-                                    {' '}
-                                    <img src={images['icon-copy']} className="Federation_icon" alt="Error" />
-                                    Copy
-                                </button>
-                            </React.Fragment>
-                        ) : null}
-                    </div>
-                </div>
+                <div className="Federations_alert">{content}</div>
                 <div className="Session__account__text">
                     {addressIsBusy}
                     <p>

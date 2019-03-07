@@ -5,9 +5,19 @@
   font-weight: 600;
   background: transparent;
   border: none;
-  min-width: 50px !important;
-  max-width: 99.99% !important;
-  transition: width 0.25s;
+}
+
+.Federation_input > input:focus {
+  outline: none;
+  transition: 0.25s ease;
+}
+
+.Federation_input > input::-ms-clear {
+  display: none;
+}
+
+.Federation_input > input::placeholder {
+  opacity: 0.85;
 }
 
 .Federation_input > span {
